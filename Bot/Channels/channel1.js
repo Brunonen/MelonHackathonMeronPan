@@ -1,6 +1,6 @@
 module.exports.channel = function(token) {
 
-    this.getAttractivnes = function() {
+    this.outputAttractivity = function() {
         return 1;
 
     }  
