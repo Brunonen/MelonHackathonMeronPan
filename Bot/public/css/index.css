@@ -55,8 +55,11 @@
 
 #usrlimit{
     width:149px;
-    color: white;
 }
 .form-inline{
     color:white;
+}
+
+.channel-option{
+    width:150px;
 }
