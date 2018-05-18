@@ -3,6 +3,15 @@ process.chdir(__dirname);
 var express = require("express");
 var nconf = require('nconf');
 var shelljs = require('shelljs');
+var requireDir = require("./requireDir");
+var channels = requireDir(__dirname  + "/Channels", null);
+
+
+for(var element in channels) {
+    var channel = new channels[element].channel(1)
+
+    console.log(channel.getAttractivnes());
+}
 
 var app = express();
 
@@ -23,6 +32,11 @@ app.use(express.static('public'));
 // define routes.
 app.get('/',
     function (req, res) {
+
+       
+        
+
+        
         res.render('index', { type: "Konsument", building: "Testgebäude" });
     }
 );
@@ -116,3 +130,6 @@ app.use("*",
 app.listen(3000, function () {
     console.log("Live at Port 3000");
 });
+
+
+
