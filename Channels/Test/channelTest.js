@@ -3,8 +3,14 @@ function testMethod(attractivity){
 	console.log(attractivity);
 }
 
-var channel = require('../cryptocompare_SMA.js');
+var EMA = require('../cryptocompare_EMA.js');
+var channel_EMA = new EMA.channel("ETH");
 
+var SMA = require('../cryptocompare_SMA.js');
+var channel_SMA = new SMA.channel("ETH");
 
-console.log(channel.outputAttractivity("BTC"));
+console.log("SMA: " + channel_SMA.outputAttractivity());
+
+console.log("EMA: " + channel_EMA.outputAttractivity());
+
 
