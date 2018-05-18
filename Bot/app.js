@@ -7,11 +7,19 @@ var requireDir = require("./requireDir");
 var channels = requireDir(__dirname  + "/Channels", null);
 
 
-for(var element in channels) {
-    var channel = new channels[element].channel(1)
+var promiseList = []
 
-    console.log(channel.outputAttractivity());
+for(var element in channels) {
+    var channel = new channels[element].channel("ETH");
+    promiseList.push(channel.getAttractivnes);
+
 }
+
+Promise.all(promiseList).then(function(values) {
+    console.log(values);
+  });
+
+
 
 var app = express();
 
