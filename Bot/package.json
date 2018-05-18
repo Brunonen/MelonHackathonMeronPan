@@ -1,0 +1,14 @@
+{
+  "name": "blockchain-prosumer",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "ejs": "^2.5.8",
+    "express": "^4.16.3",
+    "nconf": "^0.10.0",
+    "shelljs": "^0.8.1",
+    "web3": "^0.20.6"
+  }
+}

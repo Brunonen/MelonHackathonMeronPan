@@ -1,0 +1,275 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            <% if (type == 'prosumer' || type == 'consumer') { %>
+            getEnergyCons();
+            getEnergyConsTotal();
+            <% } %>
+
+            <% if (type == 'prosumer' || type == 'producer') { %>
+            getEnergyProd();
+            getEnergyProdTotal();
+            <% } %>
+        });
+
+        function getEnergyProd() {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "http://localhost:3000/energy/production",
+                timeout: 1000,
+                success: function (data) {
+                    if (data != undefined && data.power != undefined) {
+                        var power = parseFloat(data.power).toFixed(2);
+                        $('#production').html(power + ' kW ');
+                        $('.progress-bar-success').css('height', power / 20.0 * 100 + '%');
+                    } else {
+                        $('#production').html('-.-- kW');
+                        $('.progress-bar-success').css('height', '0%');
+                    }
+                },
+                error: function (parsedjson, textStatus, errorThrown) {
+                    console.log("getEnergyProd: error");
+                },
+                complete: function() {
+                    setTimeout('getEnergyProd()', 500);
+                }
+            });
+        }
+
+        function getEnergyProdTotal() {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "http://localhost:3000/energy/total/production",
+                timeout: 1000,
+                success: function (data) {
+                    if (data != undefined && data.prod_total != undefined) {
+                        $('#prod_total').html(data.prod_total + ' kWh ');
+                    } else {
+                        $('#prod_total').html('-.-- kWh ');
+                    }
+                },
+                error: function (parsedjson, textStatus, errorThrown) {
+                    console.log("getEnergyProdTotal: error");
+                },
+                complete: function() {
+                    setTimeout(getEnergyProdTotal, 500);
+                }
+            });
+        }
+
+        function getEnergyCons() {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "http://localhost:3000/energy/consumption",
+                timeout: 1000,
+                success: function (data) {
+                    console.log(data);
+                    if (data != undefined && data.power != undefined) {
+                        var power = parseFloat(data.power).toFixed(2);
+                        $('#consumption').html(power + ' kW ');
+                        $('.progress-bar-danger').css('height', power / 4.0 * 100 + '%');
+                    } else {
+                        $('#consumption').html('-.-- kW');
+                        $('.progress-bar-danger').css('height', '0%');
+                    }
+                },
+                error: function (parsedjson, textStatus, errorThrown) {
+                    console.log("getEnergyCons: error");
+                },
+                complete: function () {
+                    setTimeout(getEnergyCons, 500);
+                }
+            });
+        }
+
+        function getEnergyConsTotal() {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "http://localhost:3000/energy/total/consumption",
+                timeout: 1000,
+                success: function (data) {
+                    console.log(data);
+                    if (data != undefined && data.cons_total != undefined) {
+                        $('#cons_total').html(data.cons_total + ' kWh ');
+                    } else {
+                        $('#cons_total').html('-.-- kWh ');
+                    }
+                    setTimeout(getEnergyConsTotal(), 500);
+                },
+                error: function (parsedjson, textStatus, errorThrown) {
+                    console.log("getEnergyConsTotal: error");
+                },
+                complete: function () {
+                    setTimeout(getEnergyConsTotal, 500);
+                }
+            });
+        }
+
+        // -------------------
+
+
+        function getCurrentCHFBalance() {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "http://localhost:3000/blockchain/chftoken/balance",
+                timeout: 100000,
+                success: function (data) {
+                    console.log("REST Call");
+                    console.log(data);
+                    updateChfBalance(data);
+
+                },
+                error: function (parsedjson, textStatus, errorThrown) {
+                    console.log("getCurrentCHFBalance: error");
+                    console.log(parsedjson);
+                    console.log(errorThrown);
+                }
+            });
+        }
+        
+        function updateChfBalance(error, result) {
+            console.log(result);
+            $('#balance').html(parseFloat(result).toFixed(2) + 'CHF');
+        }
+    </script>
+</head>
+
+<body>
+    <% include ../partials/header %>
+
+    <!--main -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-5">
+                <% if (type == 'prosumer' || type == 'consumer') { %>
+                <div class="panel panel-danger bs-panel">
+                    <div style="padding: 5 10 0 10" class="panel-heading">
+                        <h4>Verbrauch</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <span class="pull-left">
+                                    <h5>Leistung</h5>
+                                </span>
+                            </div>
+                            <div class="col-xs-5">
+                                <span class="pull-right">
+                                    <h5>
+                                        <span id="consumption"></span>
+                                    </h5>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <span class="pull-left">
+                                    <h5>Zählerstand</h5>
+                                </span>
+                            </div>
+                            <div class="col-xs-5">
+                                <span class="pull-right">
+                                    <h5>
+                                        <span id="cons_total"></span>
+                                    </h5>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <% if (type == 'prosumer' || type == 'producer' ) { %>
+                <div class="panel panel-success bs-panel">
+                    <div style="padding: 5 10 0 10" class="panel-heading">
+                        <h4>Produktion</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <span class="pull-left">
+                                    <h5>Leistung</h5>
+                                </span>
+                            </div>
+                            <div class="col-xs-5">
+                                <span class="pull-right">
+                                    <h5>
+                                        <span id="production"></span>
+                                    </h5>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <span class="pull-left">
+                                    <h5>Zählerstand</h5>
+                                </span>
+                            </div>
+                            <div class="col-xs-5">
+                                <span class="pull-right">
+                                    <h5>
+                                        <span id="prod_total"></span>
+                                    </h5>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+
+            <div class="col-xs-2">
+                <div class="progress-bar-container">
+                    <% if (type == 'prosumer' || type == 'consumer' ) { %>
+                    <div class="progress progress-bar-vertical">
+                        <div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" style="height: 100%; background-color:#a74544">
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <% if (type == 'prosumer' || type == 'producer' ) { %>
+                    <div class="progress progress-bar-vertical">
+                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="height: 100%; background-color:#3e753f">
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="col-xs-5">
+                <div class="text-center">
+                    <br />
+                    <br />
+                    <span>
+                        <h3>Guthaben</h3>
+                    </span>
+                    <span>
+                        <h4><span id="balance">0.00 CHF</span></h4>
+                    </span>
+                </div>
+                <br />
+                <br />
+                <br />
+                <% if (type != 'producer') { %>
+                <div class="text-center">
+                    <button type="button" class="btn btn-primary">Guthaben aufladen...</button>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

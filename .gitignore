@@ -1,0 +1,6 @@
+/bot/node_modules/
+/bot/build/
+/bot/.puppeth/
+
+/**/*.DS_Store
+/.vscode/
