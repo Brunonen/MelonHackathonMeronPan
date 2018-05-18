@@ -2,17 +2,17 @@ var http = require('https');
 var querystring = require('querystring');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-module.exports = {
-	boundScource : "Crypto Compare",
-	evalMethod : "SMA",
-	token : "",
-	pullData: function pullDataFromSource(){
+module.exports.channel = function(token){
+	this.boundScource = "Crypto Compare";
+	this.evalMethod = "SMA";
+	this.token = token;
+	this.pullData = function(){
 		//Enter your token based Pull Data code here
 	    
 		var dataPoints = [];
 		r = new XMLHttpRequest();
 		
-		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+token+'&tsym=USD&limit=50', false);
+		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+this.token+'&tsym=USD&limit=24', false);
 		r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		r.onload  = function() {
 		   var jsonResponse = r.responseText;
@@ -27,12 +27,12 @@ module.exports = {
 		r.send();
 		return dataPoints;
 		
-	},
+	}
 	
-	evaluateData: function evaluatePullData(){
+	this.evaluateData = function(){
 		var data = this.pullData();
 		var SMA_High = [];
-		threshold_High = 15;
+		threshold_High = 12;
 		currentSum = 0;
 		offSet = 0;
 		for(i = 0; i < data.length; i++){
@@ -77,10 +77,10 @@ module.exports = {
 		
 		return highCount / (SMA_Low.length - (threshold_High - threshold_Low));
 		//Enter your Evaluation Code here
-	},
+	}
 	
-	outputAttractivity: function outputAttractiveness(callToken){
-		token = callToken;
+	this.outputAttractivity =  function(){
+		//token = callToken;
 		return this.evaluateData();
 	}
 };
