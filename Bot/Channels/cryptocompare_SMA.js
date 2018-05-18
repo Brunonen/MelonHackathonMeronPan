@@ -2,11 +2,11 @@ var http = require('https');
 var querystring = require('querystring');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-module.exports = {
-	boundScource : "Crypto Compare",
-	evalMethod : "SMA",
-	token : "",
-	pullData: function pullDataFromSource(){
+module.exports.channel = function(token){
+	this.boundScource = "Crypto Compare";
+	this.evalMethod = "SMA";
+	this.token = "";
+	this.pullData = function pullDataFromSource(){
 		//Enter your token based Pull Data code here
 	    
 		var dataPoints = [];
@@ -27,9 +27,9 @@ module.exports = {
 		r.send();
 		return dataPoints;
 		
-	},
+	}
 	
-	evaluateData: function evaluatePullData(){
+	this.evaluateData = function evaluatePullData(){
 		var data = this.pullData();
 		var SMA_High = [];
 		threshold_High = 15;
@@ -79,7 +79,7 @@ module.exports = {
 		//Enter your Evaluation Code here
 	},
 	
-	outputAttractivity: function outputAttractiveness(callToken){
+	this.outputAttractivity =  function outputAttractiveness(callToken){
 		token = callToken;
 		return this.evaluateData();
 	}
