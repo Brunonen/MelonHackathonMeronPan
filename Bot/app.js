@@ -10,7 +10,7 @@ var channels = requireDir(__dirname  + "/Channels", null);
 for(var element in channels) {
     var channel = new channels[element].channel(1)
 
-    console.log(channel.getAttractivnes());
+    console.log(channel.outputAttractivity());
 }
 
 var app = express();
