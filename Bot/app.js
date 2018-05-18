@@ -35,16 +35,22 @@ var typeName = config.get('type');
 app.set('views', __dirname + '/views/pages');
 app.set('view engine', 'ejs');
 
+app.get('/channels',
+    function (req, res) {
+    var temp = [];
+    for(var element in channels) {
+        temp.push(element);
+    }
+
+    res.send(JSON.stringify(temp));
+    }
+);
+
 app.use(express.static('public'));
 
 // define routes.
 app.get('/',
     function (req, res) {
-
-       
-        
-
-        
         res.render('index', { type: "Konsument", building: "Testgebäude" });
     }
 );

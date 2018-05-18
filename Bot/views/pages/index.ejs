@@ -3,151 +3,91 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/index.css">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
 
     <script>
         $(document).ready(function () {
-            <% if (type == 'prosumer' || type == 'consumer') { %>
-            getEnergyCons();
-            getEnergyConsTotal();
-            <% } %>
-
-            <% if (type == 'prosumer' || type == 'producer') { %>
-            getEnergyProd();
-            getEnergyProdTotal();
-            <% } %>
+           getChannelOptions();
         });
 
-        function getEnergyProd() {
+        function getChannelOptions() {
             $.ajax({
                 type: "GET",
                 dataType: "json",
-                url: "http://localhost:3000/energy/production",
+                url: "http://localhost:3000/channels",
                 timeout: 1000,
-                success: function (data) {
-                    if (data != undefined && data.power != undefined) {
-                        var power = parseFloat(data.power).toFixed(2);
-                        $('#production').html(power + ' kW ');
-                        $('.progress-bar-success').css('height', power / 20.0 * 100 + '%');
-                    } else {
-                        $('#production').html('-.-- kW');
-                        $('.progress-bar-success').css('height', '0%');
+                success: function (result) {
+                    if (result != undefined) {
+                        generateOptions(result);
                     }
                 },
                 error: function (parsedjson, textStatus, errorThrown) {
                     console.log("getEnergyProd: error");
-                },
-                complete: function() {
-                    setTimeout('getEnergyProd()', 500);
                 }
             });
         }
 
-        function getEnergyProdTotal() {
-            $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: "http://localhost:3000/energy/total/production",
-                timeout: 1000,
-                success: function (data) {
-                    if (data != undefined && data.prod_total != undefined) {
-                        $('#prod_total').html(data.prod_total + ' kWh ');
-                    } else {
-                        $('#prod_total').html('-.-- kWh ');
-                    }
-                },
-                error: function (parsedjson, textStatus, errorThrown) {
-                    console.log("getEnergyProdTotal: error");
-                },
-                complete: function() {
-                    setTimeout(getEnergyProdTotal, 500);
-                }
-            });
+        function generateOptions(data){
+            console.log(data);
+            for(var element in data){
+                console.log(data[element]);
+                addEntry(data[element]);
+            }
         }
 
-        function getEnergyCons() {
-            $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: "http://localhost:3000/energy/consumption",
-                timeout: 1000,
-                success: function (data) {
-                    console.log(data);
-                    if (data != undefined && data.power != undefined) {
-                        var power = parseFloat(data.power).toFixed(2);
-                        $('#consumption').html(power + ' kW ');
-                        $('.progress-bar-danger').css('height', power / 4.0 * 100 + '%');
-                    } else {
-                        $('#consumption').html('-.-- kW');
-                        $('.progress-bar-danger').css('height', '0%');
-                    }
-                },
-                error: function (parsedjson, textStatus, errorThrown) {
-                    console.log("getEnergyCons: error");
-                },
-                complete: function () {
-                    setTimeout(getEnergyCons, 500);
-                }
-            });
+         function addEntry(optionName) {
+            var htmlElement = generateHTML(optionName, optionName);
+            var newRow = $(htmlElement);
+            $('#balance').prepend(newRow);
+            newRow.fadeIn(1000);
         }
 
-        function getEnergyConsTotal() {
-            $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: "http://localhost:3000/energy/total/consumption",
-                timeout: 1000,
-                success: function (data) {
-                    console.log(data);
-                    if (data != undefined && data.cons_total != undefined) {
-                        $('#cons_total').html(data.cons_total + ' kWh ');
-                    } else {
-                        $('#cons_total').html('-.-- kWh ');
-                    }
-                    setTimeout(getEnergyConsTotal(), 500);
-                },
-                error: function (parsedjson, textStatus, errorThrown) {
-                    console.log("getEnergyConsTotal: error");
-                },
-                complete: function () {
-                    setTimeout(getEnergyConsTotal, 500);
-                }
-            });
+        function generateHTML(id, optionName) {
+            var newRow = `<div class="[ form-group ]">
+                            <input type="checkbox" name="${id}" id="${id}"  />
+                            <div class="[ btn-group ]">
+                                <label for="${id}" class="[ btn btn-default ]">
+                                    <span class="[ glyphicon glyphicon-ok ]"></span>
+                                    <span> </span>
+                                </label>
+                                <label for="${id}" class="[ btn btn-default active ]">
+                                    ${id}
+                                </label>
+                            </div>
+                        </div>
+                `;
+            return newRow;
         }
 
+       
+
+  
         // -------------------
 
 
-        function getCurrentCHFBalance() {
-            $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: "http://localhost:3000/blockchain/chftoken/balance",
-                timeout: 100000,
-                success: function (data) {
-                    console.log("REST Call");
-                    console.log(data);
-                    updateChfBalance(data);
-
-                },
-                error: function (parsedjson, textStatus, errorThrown) {
-                    console.log("getCurrentCHFBalance: error");
-                    console.log(parsedjson);
-                    console.log(errorThrown);
-                }
-            });
-        }
-        
-        function updateChfBalance(error, result) {
-            console.log(result);
-            $('#balance').html(parseFloat(result).toFixed(2) + 'CHF');
-        }
     </script>
 </head>
 
 <body>
     <% include ../partials/header %>
+
+    <div class="[ col-xs-12 col-sm-6 ]">
+        <h3>Standard Checkboxes</h3><hr />
+        <div class="[ form-group ]">
+            <input type="checkbox" name="fancy-checkbox-default" id="fancy-checkbox-default" autocomplete="off" />
+            <div class="[ btn-group ]">
+                <label for="fancy-checkbox-default" class="[ btn btn-default ]">
+                    <span class="[ glyphicon glyphicon-ok ]"></span>
+                    <span> </span>
+                </label>
+                <label for="fancy-checkbox-default" class="[ btn btn-default active ]">
+                 Default Checkbox
+                </label>
+            </div>
+        </div>
+    </div>
 
     <!--main -->
     <div class="container-fluid">
