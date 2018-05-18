@@ -25,3 +25,38 @@
 .btn-default :active{
     width:150px;
 }
+
+.robot-head{
+    background-image: url("http://localhost:3000/images/head.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-bottom: 16px;
+    padding-top: 255px;
+}
+
+.robot-body{
+    background-image: url("http://localhost:3000/images/body.png");
+    background-repeat: no-repeat;
+    padding-top: 1px;
+    padding-bottom:10px;
+    background-size: cover;
+}
+
+.robot-bottom{
+    background-image: url("http://localhost:3000/images/bottom.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-bottom: 120px;
+}
+
+.form-control{
+    width:149px;
+}
+
+#usrlimit{
+    width:149px;
+    color: white;
+}
+.form-inline{
+    color:white;
+}

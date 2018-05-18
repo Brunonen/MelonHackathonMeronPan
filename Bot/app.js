@@ -7,6 +7,7 @@ var requireDir = require("./requireDir");
 var channels = requireDir(__dirname  + "/Channels", null);
 
 
+
 var promiseList = []
 
 for(var element in channels) {
@@ -40,6 +41,8 @@ var typeName = config.get('type');
 // configure view engine to render EJS templates.
 app.set('views', __dirname + '/views/pages');
 app.set('view engine', 'ejs');
+
+app.use(express.static('public'));
 
 app.get('/channels',
     function (req, res) {
