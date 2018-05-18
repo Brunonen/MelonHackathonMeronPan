@@ -6,5 +6,5 @@ function testMethod(attractivity){
 var channel = require('../cryptocompare_SMA.js');
 
 
-channel.outputAttractivity("ETH", testMethod);
+console.log(channel.outputAttractivity("BTC"));
 

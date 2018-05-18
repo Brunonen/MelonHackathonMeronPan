@@ -1,5 +1,6 @@
 var http = require('https');
 var querystring = require('querystring');
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 module.exports = {
 	boundScource : "Crypto Compare",
@@ -8,68 +9,79 @@ module.exports = {
 	pullData: function pullDataFromSource(){
 		//Enter your token based Pull Data code here
 	    
+		var dataPoints = [];
+		r = new XMLHttpRequest();
 		
-		var options = {
-		  hostname: 'min-api.cryptocompare.com',
-		  port: 80,
-		  path: '/data/histohour',
-		  method: 'POST',
-		  headers: {
-			  'Content-Type': 'application/x-www-form-urlencoded',
-		  }
+		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+token+'&tsym=USD&limit=50', false);
+		r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		r.onload  = function() {
+		   var jsonResponse = r.responseText;
+		   // do something with jsonResponse
+		   jsonObject = JSON.parse(jsonResponse);
+		
+		   for(index in jsonObject["Data"]){
+			   dataPoints.push(jsonObject["Data"][index]["close"]);
+		   }
+		   
 		};
-		
-		var post_data = querystring.stringify({"fsym" : "USD", "tsym" : token, "limit" : "50"});
-
-		
-		var post_options = {
-			  host: 'min-api.cryptocompare.com',
-			  path: '/data/histohour',
-			  port: '80',
-			  method: 'POST',
-			  headers: {
-				  'Content-Type': 'application/x-www-form-urlencoded',
-				  'Content-Length': Buffer.byteLength(post_data)
-			  }
-		  };
-
-		  // Set up the request
-		  var post_req = http.request(post_options, function(res) {
-			  res.setEncoding('utf8');
-			  res.on('data', function (chunk) {
-				  console.log('Response: ' + chunk);
-			  });
-		  });
-			/*	
-		var req = http.request(options, function(res) {
-		  console.log('Status: ' + res.statusCode);
-		  console.log('Headers: ' + JSON.stringify(res.headers));
-		  res.setEncoding('utf8');
-		  res.on('data', function (body) {
-			console.log('Body: ' + body);
-		  });
-		});
-		*/
-		post_req.on('error', function(e) {
-		  console.log('problem with request: ' + e.message);
-		});
-		
-		// write data to request body
-		post_req.write(post_data);
-		post_req.end();
-		
+		r.send();
+		return dataPoints;
 		
 	},
 	
 	evaluateData: function evaluatePullData(){
-		data = this.pullData();
-		return data;
+		var data = this.pullData();
+		var SMA_High = [];
+		threshold_High = 15;
+		currentSum = 0;
+		offSet = 0;
+		for(i = 0; i < data.length; i++){
+			currentSum = currentSum + data[i];
+			if(i >= threshold_High){
+				if(offSet > 0){
+					currentSum = currentSum - data[offSet];
+				}
+				
+				SMA_High.push(currentSum / (threshold_High+1));
+				offSet++;
+			}
+		}
+		
+		var SMA_Low = [];
+		
+		threshold_Low = 5;
+		currentSum = 0;
+		offSet = 0;
+		for(i = 0; i < data.length; i++){
+			currentSum = currentSum + data[i];
+			if(i >= threshold_Low){
+				if(offSet > 0){
+					currentSum = currentSum - data[offSet];
+				}
+				
+				SMA_Low.push(currentSum / (threshold_Low+1));
+				offSet++;
+			}
+		}
+		
+	
+		highCount = 0;
+		
+		for(i = 0; i < SMA_Low.length; i++){
+			if(i >= (threshold_High - threshold_Low)){
+				if(SMA_Low[i] > SMA_High[(i - (threshold_High-threshold_Low))]){
+					highCount++;
+				}
+			}
+		}
+		
+		return highCount / (SMA_Low.length - (threshold_High - threshold_Low));
 		//Enter your Evaluation Code here
 	},
 	
-	outputAttractivity: function outputAttractiveness(callToken, callback){
+	outputAttractivity: function outputAttractiveness(callToken){
 		token = callToken;
-		callback(this.evaluateData());
+		return this.evaluateData();
 	}
 };
 

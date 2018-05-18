@@ -12,7 +12,7 @@ module.exports = {
 		var dataPoints = [];
 		r = new XMLHttpRequest();
 		
-		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+token+'&tsym=USD&limit=24', false);
+		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+token+'&tsym=USD&limit=50', false);
 		r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		r.onload  = function() {
 		   var jsonResponse = r.responseText;
@@ -31,24 +31,51 @@ module.exports = {
 	
 	evaluateData: function evaluatePullData(){
 		var data = this.pullData();
-		var SMA = [];
+		var SMA_High = [];
+		threshold_High = 15;
 		currentSum = 0;
 		offSet = 0;
 		for(i = 0; i < data.length; i++){
 			currentSum = currentSum + data[i];
-			if(i >= 8){
+			if(i >= threshold_High){
 				if(offSet > 0){
 					currentSum = currentSum - data[offSet];
 				}
 				
-				SMA.push(currentSum / 9);
+				SMA_High.push(currentSum / (threshold_High+1));
 				offSet++;
 			}
 		}
 		
-		console.log(SMA);
+		var SMA_Low = [];
 		
-		return data;
+		threshold_Low = 5;
+		currentSum = 0;
+		offSet = 0;
+		for(i = 0; i < data.length; i++){
+			currentSum = currentSum + data[i];
+			if(i >= threshold_Low){
+				if(offSet > 0){
+					currentSum = currentSum - data[offSet];
+				}
+				
+				SMA_Low.push(currentSum / (threshold_Low+1));
+				offSet++;
+			}
+		}
+		
+	
+		highCount = 0;
+		
+		for(i = 0; i < SMA_Low.length; i++){
+			if(i >= (threshold_High - threshold_Low)){
+				if(SMA_Low[i] > SMA_High[(i - (threshold_High-threshold_Low))]){
+					highCount++;
+				}
+			}
+		}
+		
+		return highCount / (SMA_Low.length - (threshold_High - threshold_Low));
 		//Enter your Evaluation Code here
 	},
 	
