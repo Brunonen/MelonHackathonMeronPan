@@ -11,13 +11,19 @@ var promiseList = []
 
 for(var element in channels) {
     var channel = new channels[element].channel("ETH");
-    promiseList.push(channel.getAttractivnes);
+    promiseList.push(channel.outputAttractivity());
+     /*   new Promise(  function(resolve, reject) { 
+            resolve(channel.outputAttractivity());
+        })
+    );*/
 
 }
 
 Promise.all(promiseList).then(function(values) {
     console.log(values);
-  });
+  }).catch(function(values) {
+    console.log("shit" + values);
+  })
 
 
 

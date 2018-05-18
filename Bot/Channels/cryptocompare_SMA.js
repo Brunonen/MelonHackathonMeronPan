@@ -5,14 +5,14 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 module.exports.channel = function(token){
 	this.boundScource = "Crypto Compare";
 	this.evalMethod = "SMA";
-	this.token = "";
+	this.token = token;
 	this.pullData = function pullDataFromSource(){
 		//Enter your token based Pull Data code here
 	    
 		var dataPoints = [];
 		r = new XMLHttpRequest();
 		
-		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+token+'&tsym=USD&limit=50', false);
+		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+this.token+'&tsym=USD&limit=50', false);
 		r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		r.onload  = function() {
 		   var jsonResponse = r.responseText;
@@ -79,8 +79,8 @@ module.exports.channel = function(token){
 		//Enter your Evaluation Code here
 	},
 	
-	this.outputAttractivity =  function outputAttractiveness(callToken){
-		token = callToken;
+	this.outputAttractivity =  function outputAttractiveness(){
+		//token = callToken;
 		return this.evaluateData();
 	}
 };
