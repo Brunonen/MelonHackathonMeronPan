@@ -45,10 +45,19 @@
                     url: "http://localhost:3000/startbot",
                     success: function(result) {
                         $('#dynamicfields').empty();
-                        alert(result);
-                        showAssets("ETH", 0.6);
+                        alert(result[0]);
+                        var currencies = ["ETH", "MLN", "BTC"];
+                        var counter = 0;
+                        result.forEach(element => {
+                            console.log("AVG for" + currencies[counter] + "is" + element);
+                            showAssets(currencies[counter], element);
+                            counter += 1;
+                        });
+
+
+                       /* showAssets("ETH", 0.6);
                         showAssets("MLN", 0.4);
-                        showAssets("BTC", 0.6);
+                        showAssets("BTC", 0.6);*/
                     },
                     error: function(result) {
                         alert('error');
@@ -82,7 +91,7 @@
         }
         function showAssets(shortcode,value){
            
-            if(value > 0.5){
+            if(value > 0.6){
                 var htmlElement = generateHTML(shortcode, "btn-success");
             } else{
                 var htmlElement = generateHTML(shortcode, "btn-danger");

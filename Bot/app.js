@@ -67,7 +67,22 @@ app.get('/',
 app.post('/startbot',
     function (req, res) {
         function callback(result,error){
-            res.send(JSON.stringify(result));
+            var botResult = [];
+            
+            for(var element in result){
+                var sum = 0;
+                var temp = result[element];
+                var counter = 0;
+                for(var tokenElement in temp){
+                    sum += temp[tokenElement];
+                    counter += 1;
+                }
+
+                var avg = sum/counter;
+                botResult.push(avg);
+               
+            }
+            res.send(botResult);
         }
         var allCoinsPromises = [];
         //TODO Make this dynamic
@@ -78,8 +93,6 @@ app.post('/startbot',
         .catch(function(values) {
             console.log("shit" + values);
         });
-
-        checkCryptoCurrency("ETH");
 
         
     }
