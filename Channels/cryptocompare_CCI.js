@@ -70,6 +70,7 @@ module.exports.channel = function(token) {
 				currentCCI = (typicalPrizes[i] - SMAToday) / (0.015 * meanDiviation)
 				CCI.push(currentCCI);
 				totalCCI = totalCCI + currentCCI;
+	
 				
 				if(currentCCI >= 100){
 					overPriced ++;
@@ -85,6 +86,11 @@ module.exports.channel = function(token) {
 			
 		}
 		totalCCI = totalCCI / CCI.length;
+		if(totalCCI > 100){
+			totalCCI = 100;
+		}else if(totalCCI < -100){
+			totalCCI = -100;
+		}
 		
 		attractivenss = 0.5;
 		attractivenss = attractivenss + ((totalCCI / 100) * 0.5);

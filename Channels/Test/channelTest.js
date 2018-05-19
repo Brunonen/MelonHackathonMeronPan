@@ -14,7 +14,7 @@ var channel_SMA = new SMA.channel("ETH");
 //console.log("EMA: " + channel_EMA.outputAttractivity());
 
 var CCI = require("../cryptocompare_CCI.js");
-var channel_CCI = new CCI.channel("MAG**");
+var channel_CCI = new CCI.channel("ETH");
 
 console.log(channel_CCI.outputAttractivity());
 
