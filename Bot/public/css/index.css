@@ -22,6 +22,12 @@
 .btn-default{
     height:34px;
 }
+.btn-danger{
+    height:34px;
+}
+.btn-success{
+    height: 34px;
+}
 .btn-default :active{
     width:150px;
 }

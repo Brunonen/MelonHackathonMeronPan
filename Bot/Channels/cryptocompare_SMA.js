@@ -12,7 +12,7 @@ module.exports.channel = function(token){
 		var dataPoints = [];
 		r = new XMLHttpRequest();
 		
-		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+this.token+'&tsym=USD&limit=12', false);
+		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+this.token+'&tsym=USD&limit=24', false);
 		r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		r.onload  = function() {
 		   var jsonResponse = r.responseText;
@@ -32,7 +32,7 @@ module.exports.channel = function(token){
 	this.evaluateData = function(){
 		var data = this.pullData();
 		var SMA_High = [];
-		threshold_High = 5;
+		threshold_High = 12;
 		currentSum = 0;
 		offSet = 0;
 		for(i = 0; i < data.length; i++){
@@ -49,7 +49,7 @@ module.exports.channel = function(token){
 		
 		var SMA_Low = [];
 		
-		threshold_Low = 2;
+		threshold_Low = 5;
 		currentSum = 0;
 		offSet = 0;
 		for(i = 0; i < data.length; i++){

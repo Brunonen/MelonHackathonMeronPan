@@ -2,7 +2,7 @@ var http = require('https');
 var querystring = require('querystring');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-module.exports.channel = function(token){
+module.exports.channel = function(token) {
 	this.boundScource = "Crypto Compare";
 	this.evalMethod = "SMA";
 	this.token = token;
@@ -12,7 +12,7 @@ module.exports.channel = function(token){
 		var dataPoints = [];
 		r = new XMLHttpRequest();
 		
-		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+this.token+'&tsym=USD&limit=12', false);
+		r.open('POST', 'https://min-api.cryptocompare.com/data/histohour?fsym='+this.token+'&tsym=USD&limit=24', false);
 		r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		r.onload  = function() {
 		   var jsonResponse = r.responseText;
@@ -31,56 +31,53 @@ module.exports.channel = function(token){
 	
 	this.evaluateData = function(){
 		var data = this.pullData();
-		var SMA_High = [];
-		threshold_High = 5;
+		var SMA = [];
+		threshold = 12;
 		currentSum = 0;
 		offSet = 0;
 		for(i = 0; i < data.length; i++){
 			currentSum = currentSum + data[i];
-			if(i >= threshold_High){
+			if(i >= threshold){
 				if(offSet > 0){
 					currentSum = currentSum - data[offSet];
 				}
 				
-				SMA_High.push(currentSum / (threshold_High+1));
+				SMA.push(currentSum / (threshold+1));
 				offSet++;
 			}
 		}
 		
-		var SMA_Low = [];
+		var EMA = [];
+
 		
-		threshold_Low = 2;
+		threshold = 12;
+		multiplier = (2 / (threshold + 1));
 		currentSum = 0;
 		offSet = 0;
 		for(i = 0; i < data.length; i++){
-			currentSum = currentSum + data[i];
-			if(i >= threshold_Low){
-				if(offSet > 0){
-					currentSum = currentSum - data[offSet];
-				}
-				
-				SMA_Low.push(currentSum / (threshold_Low+1));
-				offSet++;
+			if(i == 0){
+				EMA.push(data[i]);
+			}else{
+				EMA.push((data[i] - EMA[i-1]) * multiplier + EMA[i-1]);
 			}
+			
 		}
 		
 	
 		highCount = 0;
 		
-		for(i = 0; i < SMA_Low.length; i++){
-			if(i >= (threshold_High - threshold_Low)){
-				if(SMA_Low[i] > SMA_High[(i - (threshold_High-threshold_Low))]){
-					highCount++;
-				}
+		for(i = threshold; i < EMA.length; i++){
+			
+			if(EMA[i] > SMA[(i - (threshold))]){
+				highCount++;
 			}
+			
 		}
 		
-		return highCount / (SMA_Low.length - (threshold_High - threshold_Low));
-		//Enter your Evaluation Code here
+		return highCount / (EMA.length - (threshold));
 	}
 	
-	this.outputAttractivity =  function(){
-		//token = callToken;
+	this.outputAttractivity = function(){
 		return this.evaluateData();
 	}
 };

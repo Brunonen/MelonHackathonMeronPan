@@ -10,6 +10,51 @@
     <script>
         $(document).ready(function () {
            getChannelOptions();
+
+
+            $("#button").click(function(e) {
+                alert("Clicked");
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "/pages/test/",
+                    data: { 
+                        id: $(this).val(), // < note use of 'this' here
+                        access_token: $("#access_token").val() 
+                    },
+                    success: function(result) {
+                        alert('ok');
+                    },
+                    error: function(result) {
+                        alert('error');
+                    }
+                });
+            });
+
+
+
+
+
+
+
+           $("#startbutton").click(function(e) {
+               console.log("Button clicked");
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:3000/startbot",
+                    success: function(result) {
+                        $('#dynamicfields').empty();
+                        alert(result);
+                        showAssets("ETH", 0.6);
+                        showAssets("MLN", 0.4);
+                        showAssets("BTC", 0.6);
+                    },
+                    error: function(result) {
+                        alert('error');
+                    }
+                });
+            });
         });
 
         function getChannelOptions() {
@@ -20,6 +65,7 @@
                 timeout: 1000,
                 success: function (result) {
                     if (result != undefined) {
+                        $('#dynamicfields').empty();
                         generateOptions(result);
                     }
                 },
@@ -30,29 +76,39 @@
         }
 
         function generateOptions(data){
-            console.log(data);
             for(var element in data){
-                console.log(data[element]);
                 addEntry(data[element]);
             }
         }
-
-         function addEntry(optionName) {
-            var htmlElement = generateHTML(optionName, optionName);
+        function showAssets(shortcode,value){
+           
+            if(value > 0.5){
+                var htmlElement = generateHTML(shortcode, "btn-success");
+            } else{
+                var htmlElement = generateHTML(shortcode, "btn-danger");
+            }
             var newRow = $(htmlElement);
-            $('#balance').prepend(newRow);
+            
+            $('#dynamicfields').prepend(newRow);
             newRow.fadeIn(1000);
         }
 
-        function generateHTML(id, optionName) {
+        function addEntry(optionName) {
+            var htmlElement = generateHTML(optionName, "btn-default");
+            var newRow = $(htmlElement);
+            $('#dynamicfields').prepend(newRow);
+            newRow.fadeIn(1000);
+        }
+
+        function generateHTML(id, cssClass) {
             var newRow = `<div class="[ form-group ]">
                             <input type="checkbox" name="${id}" id="${id}"  />
                             <div class="[ btn-group ]">
-                                <label for="${id}" class="[ btn btn-default ]">
+                                <label for="${id}" class="[ btn ${cssClass} ]">
                                     <span class="[ glyphicon glyphicon-ok ]"></span>
                                     <span> </span>
                                 </label>
-                                <label for="${id}" class="[ btn btn-default active ] channel-option">
+                                <label for="${id}" class="[ btn ${cssClass} active ] channel-option">
                                     ${id}
                                 </label>
                             </div>
@@ -62,6 +118,8 @@
         }
 
        
+
+    
 
   
         // -------------------
@@ -84,10 +142,14 @@
                          </div>
                     </div>
                     <div class="robot-body">
-                        <span id="balance"></span>
+                        <span id="dynamicfields"></span>
                     </div>
                     <div class="text-center robot-bottom">
-                        <button type="button" class="btn btn-primary">Bot starten</button>
+                        <form method="post">
+                            <button id="startbutton" type="button" class="btn btn-primary">
+                                TURN ON
+                            </button>
+                        </form>
                     </div>
                 </div>
 

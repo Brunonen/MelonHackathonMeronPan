@@ -6,25 +6,24 @@ var shelljs = require('shelljs');
 var requireDir = require("./requireDir");
 var channels = requireDir(__dirname  + "/Channels", null);
 
+function checkCryptoCurrency(shortcode){
+    var promiseList = []
 
+    for(var element in channels) {
+        var channel = new channels[element].channel(shortcode);
+        promiseList.push(channel.outputAttractivity());
 
-var promiseList = []
+    }
+    //return Promise.all(promiseList);
+    return promiseList;
+    /*
 
-for(var element in channels) {
-    var channel = new channels[element].channel("ETH");
-    promiseList.push(channel.outputAttractivity());
-     /*   new Promise(  function(resolve, reject) { 
-            resolve(channel.outputAttractivity());
-        })
-    );*/
-
+    Promise.all(promiseList).then(
+        callback
+    ).catch(function(values) {
+        console.log("shit" + values);
+    })*/
 }
-
-Promise.all(promiseList).then(function(values) {
-    console.log(values);
-  }).catch(function(values) {
-    console.log("shit" + values);
-  })
 
 
 
@@ -55,6 +54,7 @@ app.get('/channels',
     }
 );
 
+//allows access to ressources in the 'public' folder like images
 app.use(express.static('public'));
 
 // define routes.
@@ -64,17 +64,29 @@ app.get('/',
     }
 );
 
-app.get('/about',
+app.post('/startbot',
     function (req, res) {
-        res.render('about', { building: buildingName });
+        function callback(result,error){
+            res.send(JSON.stringify(result));
+        }
+        var allCoinsPromises = [];
+        //TODO Make this dynamic
+        allCoinsPromises.push(checkCryptoCurrency("ETH"));
+        allCoinsPromises.push(checkCryptoCurrency("MLN"));
+        allCoinsPromises.push(checkCryptoCurrency("BTC"));
+        Promise.all(allCoinsPromises).then(callback)
+        .catch(function(values) {
+            console.log("shit" + values);
+        });
+
+        checkCryptoCurrency("ETH");
+
+        
     }
 );
 
-app.get('/settings',
-    function (req, res) {
-        res.render('settings', { building: buildingName });
-    }
-);
+
+
 
 app.get('/auctionhouse',
     function (req, res) {
@@ -87,17 +99,7 @@ app.get('/auctionhouse',
     }
 );
 
-app.get('/reboot',
-    function (req, res) {
-        shelljs.exec('sudo reboot');
-    }
-);
 
-app.get('/shutdown',
-    function (req, res) {
-        shelljs.exec('sudo shutdown -h now');
-    }
-);
 
 
 //TODO Change to post / Update
@@ -113,35 +115,6 @@ app.get("/blockchain/generatechf/:id", function (req, res) {
     blockchain.generateCHFToken(req.params.id, 1, callback);
 
 });
-
-
-
-
-
-
-app.get("/blockchain/auctionhouse/reservetoken", function (req, res) {
-    var callback = function (error, result) {
-        /* This data stack 1  */
-        console.log(result);
-        console.log(JSON.stringify(result));
-        res.send(JSON.stringify(result));
-    }
-    blockchain.reserveToken(buildingName,callback);
-
-});
-
-app.get("/blockchain/auctionhouse/buytoken/:id", function (req, res) {
-    var callback = function (error, result) {
-        /* This data stack 1  */
-        console.log(result);
-        console.log(JSON.stringify(result));
-        res.send(JSON.stringify(result));
-    }
-
-    blockchain.buySunnyToken(req.params.id, callback);
-
-});
-
 
 
 app.use("*",
