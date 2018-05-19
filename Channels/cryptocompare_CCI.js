@@ -37,7 +37,7 @@ module.exports.channel = function(token) {
 		meanDiviation = 0;
 		currentSum = 0;
 		threshold = 20;
-		offSet = 0;
+		offSet = 0
 		for(i = 0; i < data.length; i++){
 			
 			currentSum = currentSum + typicalPrizes[i];
