@@ -11,59 +11,47 @@
         $(document).ready(function () {
            getChannelOptions();
 
-
-            $("#button").click(function(e) {
-                alert("Clicked");
-                e.preventDefault();
-                $.ajax({
-                    type: "POST",
-                    url: "/pages/test/",
-                    data: { 
-                        id: $(this).val(), // < note use of 'this' here
-                        access_token: $("#access_token").val() 
-                    },
-                    success: function(result) {
-                        alert('ok');
-                    },
-                    error: function(result) {
-                        alert('error');
-                    }
-                });
-            });
-
-
-
-
-
-
-
            $("#startbutton").click(function(e) {
-               console.log("Button clicked");
-                e.preventDefault();
-                $.ajax({
-                    type: "POST",
-                    url: "http://localhost:3000/startbot",
-                    success: function(result) {
-                        $('#dynamicfields').empty();
-                        var currencies = ["ETH", "MLN", "BTC"];
-                        var counter = 0;
-                        result.forEach(element => {
-                            console.log("AVG for" + currencies[counter] + "is" + element);
-                            showAssets(currencies[counter], element);
-                            counter += 1;
-                        });
-
-
-                       /* showAssets("ETH", 0.6);
-                        showAssets("MLN", 0.4);
-                        showAssets("BTC", 0.6);*/
-                    },
-                    error: function(result) {
-                        alert('error');
-                    }
-                });
+            e.preventDefault();
+            console.log($("#startbutton").html());
+               if($("#startbutton").html().trim() == "TURN ON"){
+                    $("#startbutton").prop('disabled', true);
+                    $("#startbutton").html("TURN OFF");
+                    getAssets();
+                    $("#startbutton").prop('disabled', false);
+               }else{
+                    $("#startbutton").html("TURN ON");
+                    getChannelOptions();
+               }
+                
+               
+                
             });
         });
+        function getAssets(){
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:3000/startbot",
+                success: function(result) {
+                    $('#dynamicfields').empty();
+                    var currencies = ["ETH", "MLN", "BTC"];
+                    var counter = 0;
+                    result.forEach(element => {
+                        console.log("AVG for" + currencies[counter] + "is" + element);
+                        showAssets(currencies[counter], element);
+                        counter += 1;
+                    });
+
+
+                    /* showAssets("ETH", 0.6);
+                    showAssets("MLN", 0.4);
+                    showAssets("BTC", 0.6);*/
+                },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+        }
 
         function getChannelOptions() {
             $.ajax({
