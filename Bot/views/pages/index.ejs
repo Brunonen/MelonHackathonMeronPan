@@ -45,7 +45,6 @@
                     url: "http://localhost:3000/startbot",
                     success: function(result) {
                         $('#dynamicfields').empty();
-                        alert(result[0]);
                         var currencies = ["ETH", "MLN", "BTC"];
                         var counter = 0;
                         result.forEach(element => {

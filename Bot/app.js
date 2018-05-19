@@ -98,38 +98,6 @@ app.post('/startbot',
     }
 );
 
-
-
-
-app.get('/auctionhouse',
-    function (req, res) {
-        var auctionHouseAbi = blockchain.getAbi(blockchain.auctionHouseABI);
-        var auctionHouseAddress = blockchain.getContractAddress(blockchain.auctionHouseABI);
-        console.log("AuctionHouseAddress: " + auctionHouseAddress);
-        auctionHouseAddress = JSON.stringify(auctionHouseAddress);
-        console.log("stringify "+ auctionHouseAddress);
-        res.render('auctionhouse', { building: buildingName, contractAddress: auctionHouseAddress, abi: auctionHouseAbi });
-    }
-);
-
-
-
-
-//TODO Change to post / Update
-app.get("/blockchain/generatechf/:id", function (req, res) {
-    var callback = function (error, result) {
-        /* This data stack 1  */
-        console.log(result);
-        console.log(JSON.stringify(result));
-        res.send(JSON.stringify(result));
-    }
-
-    //TODO flexible amount
-    blockchain.generateCHFToken(req.params.id, 1, callback);
-
-});
-
-
 app.use("*",
     function (req, res) {
         res.render('404');
